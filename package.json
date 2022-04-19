@@ -1,0 +1,26 @@
+{
+  "name": "words_in_context_web_app",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build"
+  },
+  "author": "Alexey Yunoshev",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.72.0",
+    "@aws-sdk/credential-providers": "^3.72.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.5",
+    "@types/react-dom": "^18.0.1",
+    "buffer": "^6.0.3",
+    "parcel": "^2.4.1",
+    "process": "^0.11.10",
+    "typescript": "^4.6.3"
+  }
+}
