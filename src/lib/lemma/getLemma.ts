@@ -1,12 +1,12 @@
 import { DynamoDBClient, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
-import { DATA_TABLE_NAME } from "../../constants";
-import { SentenceRecord } from "./records";
-import { Language, Lemma } from "./types";
-import { convertSentenceRecordToSentence, getSentencePk } from "./utils";
+import { inflate } from "pako";
+import { DATA_TABLE_NAME } from "../constant";
+import { getLemmaPk } from "./getLemmaPk";
+import { Language, Lemma, LemmaArticle, LemmaArticleRecord } from "./types";
 
 
-export interface SearchLemmaUsageExamplesInput {
-    dynamodb: DynamoDBClient,
+export interface GetLemmaInput {
+    dynamoDB: DynamoDBClient,
     lemma: Lemma,
     language: Language,
 }
@@ -16,20 +16,26 @@ enum LemmaFieldName {
 }
 
 export async function getLemma({
-    dynamodb,
+    dynamoDB,
     language,
     lemma,
-}: SearchLemmaUsageExamplesInput): Promise<Array<Sentence>> {
+}: GetLemmaInput): Promise<LemmaArticle | null> {
     const command = new GetItemCommand({
         TableName: DATA_TABLE_NAME,
         Key: {
-            "pk": { S: getSentencePk(lemma, language) },
+            "pk": { S: getLemmaPk(lemma, language) },
             "sk": { S: LemmaFieldName.Article },
         },
     });
 
-    const response = await dynamodb.send(command);
-    const lemmaRecord = response.Item;
+    const response = await dynamoDB.send(command);
+    const lemmaRecord = response.Item as LemmaArticleRecord | undefined;
 
-    return items;
+    if (lemmaRecord === undefined) {
+        return null;
+    }
+
+    const data = new TextDecoder().decode( inflate(lemmaRecord.data.B));
+
+    return JSON.parse(data);
 }

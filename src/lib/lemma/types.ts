@@ -27,5 +27,6 @@ export interface LemmaArticleRecord {
      */
     pk: { S: string };
     // LemmaRecordData
+    sk: { S: string };
     data: { B: Uint8Array };
  }
