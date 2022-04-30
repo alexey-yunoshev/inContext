@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Lemma } from "../lib/lemma/types";
 import { useGetLemma } from "../lib/lemma/useGetLemma";
+import { MicrosoftBingTranslator } from "../logos/BingTranslator";
+import { GitHubLogo } from "../logos/GitHub";
+import { useMediaQuery } from 'react-responsive'
 
 const GOOGLE_TRANSLATE_CHARACTER_LIMIT = 5_000;
 const YANDEX_TRANSLATE_CHARACTER_LIMIT = 10_000;
+const MICROSOFT_BING_TRANSLATOR_CHARACTER_LIMIT = 1_000;
 
 enum SearchParam {
     Query = "q",
@@ -15,8 +19,8 @@ function YandexTranslateIcon() {
     return (
         <svg
             viewBox="0 0 44 44"
-            width="30"
-            height="30"
+            width="25"
+            height="25"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
             style={{
@@ -82,7 +86,7 @@ function YandexTranslateIcon() {
 function GoogleTranslateIcon() {
     return (
 
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 998.1 998.3" xmlSpace="preserve" height={25} width={25}>
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 998.1 998.3" xmlSpace="preserve" height={20} width={20}>
             <path fill="#DBDBDB" d="M931.7 998.3c36.5 0 66.4-29.4 66.4-65.4V265.8c0-36-29.9-65.4-66.4-65.4H283.6l260.1 797.9h388z" />
             <path fill="#DCDCDC" d="M931.7 230.4c9.7 0 18.9 3.8 25.8 10.6 6.8 6.7 10.6 15.5 10.6 24.8v667.1c0 9.3-3.7 18.1-10.6 24.8-6.9 6.8-16.1 10.6-25.8 10.6H565.5L324.9 230.4h606.8m0-30H283.6l260.1 797.9h388c36.5 0 66.4-29.4 66.4-65.4V265.8c0-36-29.9-65.4-66.4-65.4z" />
             <polygon fill="#4352B8" points="482.3,809.8 543.7,998.3 714.4,809.8" />
@@ -123,21 +127,29 @@ function SearchIcon() {
     )
 }
 
+function ToolbarSeparator() {
+    return (
+        <div
+            style={{
+                borderLeftColor: "var(--control-bg)",
+                borderLeftStyle: "solid",
+                borderLeftWidth: "1px",
+                height: "35px",
+                width: "1px",
+            }}
+        >
+        </div>
+    )
+}
+
 export function Search() {
     const [lemma, setLemma] = useState<Lemma>("");
+    const [language] = useState<Lemma>("pl");
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchParams, setSearchParams] = useSearchParams();
-    const [scrollPosition, setScrollPosition] = useState(0);
-    const handleScroll = () => setScrollPosition(window.pageYOffset);
-
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll, { passive: true });
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
+    const isWideScreen = useMediaQuery({
+        query: '(min-width: 520px)'
+    })
 
     useEffect(() => {
         const queryParam = searchParams.get(SearchParam.Query);
@@ -183,12 +195,17 @@ export function Search() {
                 <div
                     className={classNames('header', { 'bordered-header': sentences.length > 0 })}
                 >
-                    <div
-                        style={{
-                            fontSize: "var(--line-height-l)",
-                            fontWeight: "bold",
-                        }}
-                    >inContext</div>
+                    {
+                        isWideScreen
+                            ? (
+                                <div
+                                    style={{
+                                        fontSize: "var(--line-height-l)",
+                                        fontWeight: "bold",
+                                    }}
+                                >inContext</div>
+                            ) : null
+                    }
                     <div
                         style={{
                             alignItems: "center",
@@ -197,7 +214,7 @@ export function Search() {
                             display: "flex",
                             height: "var(--size_4xl)",
                             justifyContent: "center",
-                            width: "100%",
+                            flex: "1",
                         }}
                     >
                         <form
@@ -226,8 +243,15 @@ export function Search() {
                                     <option value="pl">Polish</option>
                                 </select>
                             </div>
-                            <div>
+                            <div
+                                style={{
+                                    width: isWideScreen ? "auto" : "100%",
+                                }}
+                            >
                                 <input
+                                    style={{
+                                        width: isWideScreen ? "auto" : "100%",
+                                    }}
                                     className="input"
                                     type="search"
                                     maxLength={25}
@@ -250,10 +274,22 @@ export function Search() {
                             </button>
                         </form>
                     </div>
+                    {
+                        isWideScreen
+                            ? (
+                                <a
+                                    title="Source code"
+                                    target="_blank"
+                                    href="https://github.com/alexey-yunoshev/incontext"
+                                >
+                                    <GitHubLogo />
+                                </a>
+                            ) : null
+                    }
                 </div>
                 <section>
                     {
-                        sentences.length === 0
+                        lemma === ""
                             ? null
                             : (
                                 <div
@@ -273,44 +309,49 @@ export function Search() {
                                         top: "73px",
                                     }}
                                 >
-                                    <div>
-                                        <div
-                                            style={{
-                                                fontSize: "var(--size_xs)",
-                                                marginBottom: "var(--spacing_l)",
-                                            }}
-                                        >Translate</div>
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: "var(--spacing_l)",
-                                            }}
-                                        >
-                                            <a
-                                                title="Translate all sentences in Yandex Translate"
-                                                target="_blank"
-                                                href={`https://translate.yandex.com/?lang=pl-ru&text=${allSentences.slice(0, YANDEX_TRANSLATE_CHARACTER_LIMIT)}`}>
-                                                <YandexTranslateIcon />
-                                            </a>
-                                            <a
-                                                title="Translate all sentences in Google Translate"
-                                                target="_blank"
-                                                href={`https://translate.google.com/?sl=pl&tl=en&text=${allSentences.slice(0, GOOGLE_TRANSLATE_CHARACTER_LIMIT)}&op=translate`}>
-                                                <GoogleTranslateIcon />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div
-                                        style={{
-                                            borderLeftColor: "var(--control-bg)",
-                                            borderLeftStyle: "solid",
-                                            borderLeftWidth: "1px",
-                                            height: "35px",
-                                            width: "1px",
-                                        }}
-                                    >
-                                    </div>
+                                    {
+                                        sentences.length === 0
+                                            ? null
+                                            : (
+                                                <>
+                                                    <div>
+                                                        <div
+                                                            style={{
+                                                                fontSize: "var(--size_xs)",
+                                                                marginBottom: "var(--spacing_l)",
+                                                            }}
+                                                        >Translate</div>
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                gap: "var(--spacing_l)",
+                                                            }}
+                                                        >
+                                                            <a
+                                                                title={`Translate all sentences in Yandex Translate. Character limit is ${YANDEX_TRANSLATE_CHARACTER_LIMIT}.`}
+                                                                target="_blank"
+                                                                href={`https://translate.yandex.com/?lang=${language}-ru&text=${allSentences.slice(0, YANDEX_TRANSLATE_CHARACTER_LIMIT)}`}>
+                                                                <YandexTranslateIcon />
+                                                            </a>
+                                                            <a
+                                                                title={`Translate all sentences in Google Translate. Character limit is ${GOOGLE_TRANSLATE_CHARACTER_LIMIT}.`}
+                                                                target="_blank"
+                                                                href={`https://translate.google.com/?sl=${language}&tl=ru&text=${allSentences.slice(0, GOOGLE_TRANSLATE_CHARACTER_LIMIT)}&op=translate`}>
+                                                                <GoogleTranslateIcon />
+                                                            </a>
+                                                            <a
+                                                                title={`Translate all sentences in Microsoft Bing Translator. Character limit is ${MICROSOFT_BING_TRANSLATOR_CHARACTER_LIMIT}.`}
+                                                                target="_blank"
+                                                                href={`https://www.bing.com/translator?from=${language}&to=ru&text=${allSentences.slice(0, MICROSOFT_BING_TRANSLATOR_CHARACTER_LIMIT)}&op=translate`}>
+                                                                <MicrosoftBingTranslator />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    <ToolbarSeparator />
+                                                </>
+                                            )
+                                    }
                                     <div>
                                         <div
                                             style={{
@@ -329,13 +370,13 @@ export function Search() {
                                                 title="Open Wikisłownik dicitonary article"
                                                 target="_blank"
                                                 href={`https://pl.wiktionary.org/wiki/${lemma}`}>
-                                                <img src="https://pl.wiktionary.org/static/favicon/piece.ico" height={25} width={25} alt="Wikisłownik" />
+                                                <img src="https://pl.wiktionary.org/static/favicon/piece.ico" height={20} width={20} alt="Wikisłownik" />
                                             </a>
                                             <a
                                                 title="Open WSJP dicitonary article"
                                                 target="_blank"
                                                 href={`https://wsjp.pl/szukaj/podstawowe/wyniki?szukaj=${lemma}`}>
-                                                <img src="https://wsjp.pl/img/favicon/favicon.ico" height={25} width={25} alt="WSJP" />
+                                                <img src="https://wsjp.pl/img/favicon/favicon.ico" height={20} width={20} alt="WSJP" />
                                             </a>
                                         </div>
                                     </div>
@@ -346,10 +387,43 @@ export function Search() {
                         sentences.map((sentence, i) => (
                             <div
                                 key={`${lemma}${i}`}
-                                style={{ marginBottom: "10px" }}
+                                style={{
+                                    borderRadius: "var(--border-radius_m)",
+                                    marginBottom: "20px",
+                                    backgroundColor: "var(--bg-default)",
+                                    paddingLeft: "var(--size_xs)",
+                                    paddingRight: "var(--size_xs)",
+                                    paddingTop: "0.5em",
+                                    paddingBottom: "0.5em",
+                                }}
+
                             >
                                 <div >
-                                    {sentence.text}
+                                    <div
+                                        style={{
+                                            marginBottom: "0.5em",
+                                        }}
+                                    >
+                                        {sentence.text}
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                        }}
+                                    >
+                                        <a
+                                            style={{
+                                                fontSize: "var(--size_xs)",
+                                                color: "var(--text-ghost)",
+                                                marginLeft: "auto",
+                                            }}
+                                            title="Open source"
+                                            target="_blank"
+                                            href={sentence.source}
+                                        >
+                                            Source
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         ))

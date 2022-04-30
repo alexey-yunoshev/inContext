@@ -40,7 +40,10 @@ a:hover {
 
 :root {
     --bg-accent: rgba(247, 248, 251, 1);
+    --bg-default: rgba(255, 255, 255, 1);
     --control-bg: rgba(0, 39, 139, 0.05);
+    --control-ghost-text: rgba(0, 32, 51, 0.8);
+    --text-ghost: rgba(0, 32, 51, 0.4);
     --text-link: rgba(25, 131, 255, 1);
     --text-link-hover: rgba(57, 148, 255, 1);
     --text-primary: rgba(0, 32, 51, 1);
@@ -84,7 +87,7 @@ button:hover {
     top: 0;
     width: 100%;
     background: var(--bg-accent);
-
+    flex-wrap: wrap;
 }
 
 .bordered-header {
