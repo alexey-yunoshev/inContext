@@ -5,7 +5,7 @@
   "source": "src/index.html",
   "scripts": {
     "start": "dotenv -e ./env/.env.local -- parcel",
-    "build": "dotenv -e ./env/.env.prod -- parcel build"
+    "build": "dotenv -e ./env/.env.prod -- parcel build --public-url https://alexey-yunoshev.github.io/incontext"
   },
   "author": "Alexey Yunoshev",
   "license": "ISC",
