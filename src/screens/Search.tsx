@@ -164,6 +164,7 @@ export function Search() {
 
         setSearchInput(queryParam);
         setLemma(queryParam);
+        window.scrollTo({top: 0});
     }, [searchParams]);
 
     const lemmaArticle = useGetLemma({
@@ -325,7 +326,7 @@ export function Search() {
                                                             style={{
                                                                 display: "flex",
                                                                 alignItems: "center",
-                                                                gap: "var(--spacing_l)",
+                                                                gap: isWideScreen ? "var(--spacing_l)" : "var(--line-height-2xs)",
                                                             }}
                                                         >
                                                             <a
@@ -363,7 +364,7 @@ export function Search() {
                                             style={{
                                                 display: "flex",
                                                 alignItems: "center",
-                                                gap: "var(--spacing_l)",
+                                                gap: isWideScreen ? "var(--spacing_l)" : "var(--line-height-2xs)",
                                             }}
                                         >
                                             <a
